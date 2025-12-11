@@ -1,19 +1,3 @@
-This is a fantastic request\! Converting an Arduino/ESP32 RESTful API example to run on a Raspberry Pi Pico W using MicroPython requires a fundamental shift in programming language, hardware libraries, and the network stack.
-
-Based on the provided Arduino lab manual, the goal is to set up a **MicroPython Web Server** on the Pico W that can:
-
-1.  Connect to WiFi.
-2.  Host a simple RESTful API (HTTP GET requests).
-3.  Read on-board sensor data (e.g., Temperature).
-4.  Control an on-board actuator (e.g., the Pico W's LED).
-5.  Support multiple endpoints (`/temp`, `/led/0`, `/led/1`).
-
-Since the Pico W itself does not have a built-in IMU, the lab manual will focus on the **on-board temperature sensor** and the **on-board LED**.
-
-Here is the MicroPython-focused lab manual, formatted for GitHub Markdown:
-
------
-
 # MicroPython on Raspberry Pi Pico W Lab Manual
 
 ## I. Objective
