@@ -427,7 +427,8 @@ Use a tool like [Postman](https://www.postman.com/downloads/) to interact with y
 2.  **Method:** `POST`
 3.  **URL:**
         http://<Pico-IP>/led
-4.  Go to **Body** tab:
+        ''
+5.  Go to **Body** tab:
     *   Select **raw**.
     *   Choose **JSON** from the dropdown.
     *   Enter:
@@ -437,8 +438,8 @@ Use a tool like [Postman](https://www.postman.com/downloads/) to interact with y
         }
         ```
         (Use `1` for ON, `0` for OFF)
-5.  Ensure header `Content-Type: application/json` is set (Postman adds this automatically when JSON is selected).
-6.  Click **Send**.
+6.  Ensure header `Content-Type: application/json` is set (Postman adds this automatically when JSON is selected).
+7.  Click **Send**.
     *   Response will confirm LED status:
             <h1>LED Control</h1><p>LED is ON</p>
 
