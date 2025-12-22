@@ -368,7 +368,7 @@ The project consists of two main files:
 
 ***
 
-## IV. Lab Exercise: Testing the RESTful API
+## IV. Testing the RESTful API
 
 ### 1\. Upload Code
 
@@ -407,6 +407,9 @@ Use a tool like [Postman](https://www.postman.com/downloads/) to interact with y
 ## **Using Postman**
 
 ### **GET Requests**
+
+<img width="836" height="588" alt="image" src="https://github.com/user-attachments/assets/3f3de10f-4f16-436d-8fd3-ad0e0c457404" />
+
 
 1.  Open Postman and create a new request.
 2.  **Method:** `GET`
