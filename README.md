@@ -17,7 +17,7 @@ By the end of this session, participants will be able to set up a **MicroPython 
 
 1.  If not already done, hold the **BOOTSEL** button while connecting the Pico W to your computer.
 2.  The Pico W should appear as a drive named **RPI-RP2**.
-3.  Drag and drop the official MicroPython UF2 file onto this drive. The drive will disappear, and the Pico W will reboot running MicroPython.
+3.  Drag and drop the official MicroPython [UF2 file](https://micropython.org/resources/firmware/RPI_PICO_W-20251209-v1.27.0.uf2) onto this drive. The drive will disappear, and the Pico W will reboot running MicroPython.
 4.  Open **Thonny** and ensure it is configured to talk to the Pico W.
 
 ## III. MicroPython REST API Setup
