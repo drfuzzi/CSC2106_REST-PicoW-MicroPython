@@ -423,6 +423,9 @@ Use a tool like [Postman](https://www.postman.com/downloads/) to interact with y
 
 ### **POST Request to Toggle LED**
 
+<img width="821" height="638" alt="image" src="https://github.com/user-attachments/assets/9f74d1fd-7111-4d01-a45c-fee291a95478" />
+
+
 1.  Open Postman and create a new request.
 2.  **Method:** `POST`
 3.  **URL:**
