@@ -426,8 +426,7 @@ Use a tool like [Postman](https://www.postman.com/downloads/) to interact with y
 1.  Open Postman and create a new request.
 2.  **Method:** `POST`
 3.  **URL:**
-        http://<Pico-IP>/led
-        ``
+        `http://<Pico-IP>/led` 
 5.  Go to **Body** tab:
     *   Select **raw**.
     *   Choose **JSON** from the dropdown.
