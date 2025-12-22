@@ -179,7 +179,7 @@ while True:
 
 ### 1\. Upload Code
 
-  * Upload both `web_server.py` and `main.py` to the Raspberry Pi Pico W using Thonny.
+  * Upload both `web_server.py` and `main.py` to the Raspberry Pi Pico W using Thonny IDE (ensure these two scripts are saved in the Pico W).
   * Ensure you have updated the `SSID` and `PASSWORD` variables in `main.py` with your local WiFi credentials.
 
 ### 2\. Run and Connect
