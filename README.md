@@ -412,9 +412,9 @@ Use a tool like [Postman](https://www.postman.com/downloads/) to interact with y
 2.  **Method:** `GET`
 3.  **URL:**
     *   For root page:
-            http://<Pico-IP>/
+            http://'<'Pico-IP'>'/
     *   For temperature:
-            http://<Pico-IP>/temp
+            http://'<'Pico-IP'>'/temp
 4.  Click **Send**.
     *   `/` returns the API root HTML.
     *   `/temp` returns the current temperature.
@@ -426,7 +426,7 @@ Use a tool like [Postman](https://www.postman.com/downloads/) to interact with y
 1.  Open Postman and create a new request.
 2.  **Method:** `POST`
 3.  **URL:**
-        http://<Pico-IP>/led
+        http://'<'Pico-IP'>'/led
 4.  Go to **Body** tab:
     *   Select **raw**.
     *   Choose **JSON** from the dropdown.
