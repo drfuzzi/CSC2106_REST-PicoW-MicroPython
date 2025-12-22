@@ -217,7 +217,20 @@ def serve_client(client_socket, temp_c):
 
 ### B. Main Application Logic (`main.py`)
 
-This file connects to WiFi, sets up the peripherals, and starts the server loop.
+* Handles Wi-Fi connection and server loop.
+* Creates a socket that listens on port 80.
+* Accepts incoming client connections and delegates request handling to web_server.py.
+* Reads the Pico W internal temperature sensor before serving each request.
+* Applies LED state changes returned by serve_client().
+
+Key responsibilities:
+* Connect to Wi-Fi using SSID and password.
+* Start the HTTP server socket.
+* Loop forever:
+  * Accept client connection.
+  * Read temperature.
+  * Call serve_client() to process the request.
+  * Update LED state based on the returned value.
 
 ```python
 # main.py
@@ -330,8 +343,8 @@ Use a web browser or a tool like Postman to interact with your Pico W using its 
 | :--- | :--- | :--- | :--- |
 | `http://<IP_ADDRESS>/` | GET | Root/Info | Displays available endpoints. |
 | `http://<IP_ADDRESS>/temp` | GET | Reads temperature sensor. | Displays on-board temperature in a simple HTML page. **LED turns OFF.** |
-| `http://<IP_ADDRESS>/led/1` | GET | Turns on the Pico W's on-board LED. | Displays "LED is ON" page. **LED should turn ON.** |
-| `http://<IP_ADDRESS>/led/0` | GET | Turns off the Pico W's on-board LED. | Displays "LED is OFF" page. **LED should turn OFF.** |
+| `http://<IP_ADDRESS>/led` | POST | Turns on the Pico W's on-board LED. | Displays "LED is ON" page. **LED should turn ON.** |
+| `http://<IP_ADDRESS>/led` | POST | Turns off the Pico W's on-board LED. | Displays "LED is OFF" page. **LED should turn OFF.** |
 
 -----
 
