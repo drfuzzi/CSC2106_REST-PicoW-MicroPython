@@ -22,7 +22,13 @@ By the end of this session, participants will be able to set up a **MicroPython 
 
 ## III. MicroPython REST API Setup
 
-The RESTful API logic will be broken into two main files: `main.py` (the main program and API router) and `web_server.py` (the core HTTP server logic).
+The RESTful API logic will be broken into two main files:
+* `main.py` (the main program and API router) and
+* `web_server.py` (the core HTTP server logic).
+
+The **API router** in main.py is responsible for defining and managing the routes of your API. It maps incoming HTTP requests (such as GET /users or POST /orders) to the appropriate handler functions that implement the business logic. In other words, it acts like a traffic controller, ensuring each request is directed to the correct endpoint based on its URL path and HTTP method.
+
+The **core HTTP server logic** in web_server.py handles the low-level networking tasks required to run the server. This includes listening on a specific port, accepting client connections, parsing raw HTTP requests, and sending back responses. Essentially, it provides the foundation for communication over HTTP, while the API router builds on top of it to deliver structured RESTful functionality.
 
 ### A. Utility Code (`web_server.py`)
 
