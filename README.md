@@ -336,6 +336,38 @@ while True:
             continue
 ```
 
+## **How It Works**
+
+The project consists of two main files:
+
+### **`main.py`**
+
+*   Connects the Pico W to Wi-Fi using the provided SSID and password.
+*   Creates a socket that listens on port `80` for incoming HTTP requests.
+*   Reads the onboard temperature sensor before serving each request.
+*   Delegates request handling to `serve_client()` in `web_server.py`.
+*   Applies LED state changes returned by `serve_client()`:
+    *   `0` → LED OFF
+    *   `1` → LED ON
+    *   `-1` → No change
+
+### **`web_server.py`**
+
+*   Parses incoming HTTP requests (method, path, headers, body).
+*   Routes requests to the correct handler:
+    *   `GET /` → Returns API root page with available endpoints.
+    *   `GET /temp` → Returns current temperature in HTML.
+    *   `POST /led` → Sets LED state based on request body.
+*   Builds HTTP responses using `http_response()`.
+
+**Routing Logic:**
+
+*   If `GET /temp` → Respond with temperature.
+*   If `POST /led` → Parse body for `state` (0 or 1) and return LED status.
+*   If unknown path → Respond with `404 Not Found`.
+
+***
+
 ## IV. Lab Exercise: Testing the RESTful API
 
 ### 1\. Upload Code
@@ -350,15 +382,70 @@ while True:
 
 ### 3\. Test Endpoints
 
-Use a web browser or a tool like Postman to interact with your Pico W using its IP address.
+Use a tool like [Postman](https://www.postman.com/downloads/) to interact with your Pico W using its IP address.
 
-| Endpoint (URL) | HTTP Method | Expected Action | Expected Output |
-| :--- | :--- | :--- | :--- |
-| `http://<IP_ADDRESS>/` | GET | Root/Info | Displays available endpoints. |
-| `http://<IP_ADDRESS>/temp` | GET | Reads temperature sensor. | Displays on-board temperature in a simple HTML page. **LED turns OFF.** |
-| `http://<IP_ADDRESS>/led` | POST | Turns on the Pico W's on-board LED. | Displays "LED is ON" page. **LED should turn ON.** |
-| `http://<IP_ADDRESS>/led` | POST | Turns off the Pico W's on-board LED. | Displays "LED is OFF" page. **LED should turn OFF.** |
+| Method   | Endpoint | Description                         | Example Response                                          |
+| -------- | -------- | ----------------------------------- | --------------------------------------------------------- |
+| **GET**  | `/`      | API root page with available routes | HTML listing `/temp` and `/led`                           |
+| **GET**  | `/temp`  | Returns current temperature         | `<h1>Pico W Temperature</h1><p>Temperature: 28.34 °C</p>` |
+| **POST** | `/led`   | Sets LED state (ON/OFF)             | `<h1>LED Control</h1><p>LED is ON</p>` or OFF             |
 
------
+**POST Body Options for `/led`:**
 
-Would you like me to adapt the **Lab Assignment** from the Arduino manual (adding accelerometer, gyroscope, and buzzer functionality) into a corresponding MicroPython challenge?
+*   **JSON:**
+    ```json
+    {"state": 1}
+    ```
+    (Use `1` for ON, `0` for OFF)
+*   **Form:**
+        state=1
+*   **Plain text:**
+        1
+
+***
+
+## **Using Postman**
+
+### **GET Requests**
+
+1.  Open Postman and create a new request.
+2.  **Method:** `GET`
+3.  **URL:**
+    *   For root page:
+            http://<Pico-IP>/
+    *   For temperature:
+            http://<Pico-IP>/temp
+4.  Click **Send**.
+    *   `/` returns the API root HTML.
+    *   `/temp` returns the current temperature.
+
+***
+
+### **POST Request to Toggle LED**
+
+1.  Open Postman and create a new request.
+2.  **Method:** `POST`
+3.  **URL:**
+        http://<Pico-IP>/led
+4.  Go to **Body** tab:
+    *   Select **raw**.
+    *   Choose **JSON** from the dropdown.
+    *   Enter:
+        ```json
+        {
+          "state": 1
+        }
+        ```
+        (Use `1` for ON, `0` for OFF)
+5.  Ensure header `Content-Type: application/json` is set (Postman adds this automatically when JSON is selected).
+6.  Click **Send**.
+    *   Response will confirm LED status:
+            <h1>LED Control</h1><p>LED is ON</p>
+
+**Alternative:**  
+Use **x-www-form-urlencoded** in Body tab:
+
+    Key: state
+    Value: 1
+
+***
