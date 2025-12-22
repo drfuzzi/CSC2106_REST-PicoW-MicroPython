@@ -33,6 +33,19 @@ The **core HTTP server logic** in web_server.py handles the low-level networking
 ### A. Utility Code (`web_server.py`)
 
 This file contains the simple socket server and should be uploaded to the Pico W first.
+* Implements HTTP parsing and routing logic.
+* Defines helper functions:
+  * http_response() – Builds HTTP response strings.
+  * _parse_request() – Extracts method, path, headers, and body.
+  * _parse_led_state() – Reads LED state from JSON, form data, or plain text.
+* Handles routes:
+  * GET / – API root page.
+  * GET /temp – Returns current temperature.
+  * POST /led – Sets LED state (ON/OFF) based on request body.
+* Routing logic:
+  * If GET /temp → Respond with temperature.
+  * If POST /led → Parse body for state (0 or 1) and return LED status.
+  * If unknown path → Respond with 404 Not Found.
 
 ```python
 # web_server.py
