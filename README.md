@@ -36,47 +36,182 @@ This file contains the simple socket server and should be uploaded to the Pico W
 
 ```python
 # web_server.py
-# Simple function to create an HTTP response string
-def http_response(html):
-    return "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n" + html
+
+# Flexible HTTP response builder
+def http_response(body, status=200, content_type="text/html"):
+    reason = {
+        200: "OK",
+        400: "Bad Request",
+        404: "Not Found",
+        405: "Method Not Allowed",
+    }.get(status, "OK")
+
+    return (
+        f"HTTP/1.1 {status} {reason}\r\n"
+        f"Content-Type: {content_type}\r\n"
+        f"Connection: close\r\n"
+        f"\r\n"
+        f"{body}"
+    )
+
+def _parse_request(raw):
+    """
+    Very simple HTTP request parser for method, path, headers, and body.
+    Assumes CRLF separators and small payloads (fits in initial recv).
+    """
+    # Split header and body
+    parts = raw.split("\r\n\r\n", 1)
+    header_block = parts[0]
+    body = parts[1] if len(parts) > 1 else ""
+
+    # First line: METHOD PATH HTTP/VERSION
+    header_lines = header_block.split("\r\n")
+    request_line = header_lines[0] if header_lines else ""
+    try:
+        method, path, _ = request_line.split(" ", 2)
+    except ValueError:
+        method, path = "GET", "/"
+
+    # Parse headers into dict (case-insensitive keys)
+    headers = {}
+    for line in header_lines[1:]:
+        if ":" in line:
+            k, v = line.split(":", 1)
+            headers[k.strip().lower()] = v.strip()
+
+    return method.upper(), path, headers, body
+
+def _parse_led_state(body, content_type):
+    """
+    Accepts JSON: {"state": 1}, form: state=1, or plain text: '1'
+    Returns 0 or 1, or None if invalid.
+    """
+    # Normalize content_type
+    ct = (content_type or "").split(";")[0].strip().lower()
+
+    # JSON
+    if ct == "application/json":
+        try:
+            import json
+            data = json.loads(body)
+            state = data.get("state", None)
+            if state in (0, 1):  # accept explicit 0/1
+                return state
+            # also allow truthy/falsy
+            if isinstance(state, bool):
+                return 1 if state else 0
+            if isinstance(state, str) and state in ("0", "1"):
+                return int(state)
+        except Exception:
+            return None
+
+    # Form-encoded
+    elif ct == "application/x-www-form-urlencoded":
+        try:
+            # Very simple parse without url-decoding
+            pairs = body.split("&")
+            for p in pairs:
+                if "=" in p:
+                    k, v = p.split("=", 1)
+                    if k == "state" and v in ("0", "1"):
+                        return int(v)
+        except Exception:
+            return None
+
+    # Plain text (or unknown content type)
+    else:
+        txt = body.strip()
+        if txt in ("0", "1"):
+            return int(txt)
+
+    return None
 
 # Function to serve the client connection
 def serve_client(client_socket, temp_c):
-    # Read client request
-    request = client_socket.recv(1024).decode('utf-8')
-    # Use a basic split to find the requested path, e.g., 'GET /temp HTTP/1.1'
-    try:
-        path = request.split(' ')[1]
-    except IndexError:
-        path = '/'
+    request = client_socket.recv(1024).decode("utf-8")
 
-    # Set up LED and Temperature variables
+    method, path, headers, body = _parse_request(request)
+
+    # LED state sentinel: -1 means "no change"
     global led_state
-    led_state = -1 # Sentinel value, changed by the main logic
+    led_state = -1
 
-    # --- Routing Logic ---
-    if path == '/temp':
-        response_html = f"<h1>Pico W Temperature</h1><p>Temperature: {temp_c:.2f} &deg;C</p>"
-        response = http_response(response_html)
-        led_state = 0  # Turn LED OFF on status read
-    elif path == '/led/1':
-        response_html = "<h1>LED Control</h1><p>LED is ON</p>"
-        response = http_response(response_html)
-        led_state = 1
-    elif path == '/led/0':
-        response_html = "<h1>LED Control</h1><p>LED is OFF</p>"
-        response = http_response(response_html)
-        led_state = 0
-    else: # Default endpoint ('/')
-        response_html = "<h1>Pico W API Root</h1><p>Available Endpoints: /temp, /led/1, /led/0</p>"
-        response = http_response(response_html)
-        led_state = -1 # No change
+    # --- Routing ---
+    if path == "/temp":
+        if method != "GET":
+            response = http_response(
+                "<h1>Method Not Allowed</h1><p>Use GET for /temp</p>",
+                status=405
+            )
+        else:
+            response_html = (
+                f"<h1>Pico W Temperature</h1>"
+                f"<p>Temperature: {temp_c:.2f} &deg;C</p>"
+            )
+            response = http_response(response_html, status=200)
+            # optional: reading temp does not change LED
+            led_state = -1
 
-    # Send response and close connection
-    client_socket.send(response.encode('utf-8'))
-    client_socket.close()
+    elif path == "/led":
+        if method != "POST":
+            response = http_response(
+                "<h1>Method Not Allowed</h1><p>Use POST for /led</p>",
+                status=405
+            )
+        else:
+            ct = headers.get("content-type", "")
+            state = _parse_led_state(body, ct)
+            if state is None:
+                response = http_response(
+                    (
+                        "<h1>Bad Request</h1>"
+                        "<p>Send LED state via JSON {'state': 0|1}, "
+                        "form 'state=0|1', or plain text '0'/'1'.</p>"
+                    ),
+                    status=400
+                )
+                led_state = -1
+            else:
+                led_state = state
+                status_text = "ON" if state == 1 else "OFF"
+                response_html = (
+                    f"<h1>LED Control</h1><p>LED is {status_text}</p>"
+                )
+                response = http_response(response_html, status=200)
+
+    elif path == "/":
+        if method != "GET":
+            response = http_response(
+                "<h1>Method Not Allowed</h1><p>Use GET for /</p>",
+                status=405
+            )
+        else:
+            response_html = (
+                "<h1>Pico W API Root</h1>"
+                "<p>Available Endpoints:</p>"
+                "<ul>"
+                "<li>GET /temp</li>"
+                "<li>POST /led (body: {'state':0|1}, or state=0|1, or '0'/'1')</li>"
+                "</ul>"
+            )
+            response = http_response(response_html, status=200)
+            led_state = -1
+
+    else:
+        response = http_response(
+            "<h1>Not Found</h1><p>Unknown path</p>",
+            status=404
+        )
+        led_state = -1
+
+    # Send response and close
+    try:
+        client_socket.send(response.encode("utf-8"))
+    finally:
+        client_socket.close()
 
     return led_state
+
 
 ```
 
