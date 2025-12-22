@@ -10,8 +10,8 @@ By the end of this session, participants will be able to set up a **MicroPython 
 
   * Raspberry Pi Pico W board.
   * Micro-USB cable for power and data.
-  * Computer with a modern IDE (e.g., **Thonny**, recommended for MicroPython development).
-  * The Pico W must be running the **latest MicroPython firmware** (or a version supporting the `_thread` module for multitasking).
+  * Computer with a **[Thonny](https://thonny.org/)** IDE (for MicroPython development).
+  * The Pico W must be running the **latest MicroPython firmware**.
 
 ### B. Installing MicroPython
 
