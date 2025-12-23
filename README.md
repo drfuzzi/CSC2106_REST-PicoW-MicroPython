@@ -2,7 +2,7 @@
 
 ## I. Objective
 
-By the end of this session, participants will be able to set up a **MicroPython Web Server** on the Raspberry Pi Pico W to create and consume a basic RESTful API for on-board sensor reading (temperature) and actuator control (LED).
+By the end of this session, students will be able to set up a **MicroPython Web Server** on the Raspberry Pi Pico W to create and consume a basic RESTful API for on-board sensor reading (temperature) and actuator control (LED).
 
 ## II. Prerequisites and Setup
 
